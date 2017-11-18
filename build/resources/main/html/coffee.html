@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="coffeeApp">
+<head>
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="/css/bootstrap.css" />
+    <meta name="viewport" content="width=device-width", initial-scale="1.0" />
+</head>
+<body>
+	<div ng-controller="OrderController" class="container"> 
+		<alert ng-repeat="message in messages" type="message.type" close="closeAlert($index)">
+			{{ message.msg }}
+		</alert> 
+	
+		<form ng-submit="orderCoffee()">
+			<div class="form-group">
+				<label>Drink</label>
+				<select ng-model="drink.type" ng-options="type.name for type in types | orderBy: 'name'" class="form-control"></select>
+			</div>
+			<div class="form-group">
+				<label>Size</label>
+				<select ng-model="drink.size" ng-options="size for size in sizes" class="form-control"></select>
+			</div>
+			<div class="form-group">
+				<label>Your Name</label>
+				<input type="text" ng-model="drink.orderedBy" ng-required="true"  class="form-control"></select>
+			</div>
+			<div class="form-group">
+				<input type="submit" class="btn btn-default btn-lg" value"Order Now!" /> 
+			</div>
+		</form>
+		<pre>{{drink|json}}</pre>
+	</div>
+
+<script type="text/javascript" src="js/angular.min.js"></script>
+<script type="text/javascript" src="js/angular-resource.min.js"></script>
+<script type="text/javascript" src="js/ui-bootstrap-tpls-0.10.0.min.js"></script>
+<script src="https:////ajax.googleapis.com/ajax/libs/angularjs/1.2.12/angular-route.js"></script>
+<script>
+ var coffeeApp = angular.module('coffeeApp', ['ngResource', 'ui.bootstrap']);
+ coffeeApp.controller('OrderController', ['$scope', '$resource', function($scope, $resource) {
+ 	$scope.types = [
+ 		{name: 'Americano', family: 'Coffee'},
+ 		{name: 'Latte', family: 'Coffee'},
+ 		{name: 'Tea', family: 'Other'},
+ 		{name: 'Cappuccino', family: 'Coffee'}
+ 	];
+ 	$scope.sizes = ['Small', 'Medium', 'Large'];
+ 	$scope.messages = [];
+ 	
+ 	$scope.orderCoffee = function() {
+ 		$scope.drink.coffeeShopId = 1;
+ 		var coffeeOrder = $resource('/service/coffeeshop/order/');
+ 		console.log($scope.drink);
+ 		coffeeOrder.save($scope.drink, function(order) {
+ 			$scope.messages.push({type: 'success', msg: 'Order Sent!'});
+ 		});
+ 	};
+ 	
+ 	$scope.closeAlert = function(index) {
+ 		$scope.messages.splice(index, 1); 
+ 	}
+ }]);
+</script>
+
+</body>
+</html>
